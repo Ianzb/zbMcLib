@@ -1,14 +1,12 @@
 [project]
-name = "zbToolLib"
-version = "1.0.1"
-description = "zb工具库"
+name = "zbMcLib"
+version = "0.0.1"
+description = "zbMinecraft库"
 requires-python = ">=3.12"
 dependencies = [
-    "send2trash>=1.8.3",
-    "winshell>=0.6",
-    "pywin32>=308",
-    "DownloadKit>=2.0.7",
-    "requests>=2.32.3",
+    "zbToolLib>=1.0.0",
+    "lxml>=5.3.0",
+    "beautifulsoup4>=4.12.3"
 ]
 authors = [
     { name = "Ianzb", email = "93322252@qq.com" },
@@ -18,7 +16,7 @@ maintainers = [
 ]
 readme = "README.md"
 license = { text = "MIT License" }
-keywords = ["zb", "Ianzb", "tool", "lib"]
+keywords = ["zb", "Ianzb", "Minecraft", "lib"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
@@ -34,4 +32,4 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project.urls]
-Repository = "https://github.com/Ianzb/zbToolLib/"
+Repository = "https://github.com/Ianzb/zbMcLib/"
