@@ -6,9 +6,7 @@ import time
 
 import bs4
 import lxml
-from zbToolLib import *
-
-f = ZbToolLib()
+import zbToolLib as f
 
 
 class MccnVersion:
