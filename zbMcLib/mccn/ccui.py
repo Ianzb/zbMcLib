@@ -4,7 +4,7 @@ import json
 from PIL import Image
 
 
-def renameAll(path: str):
+def convertAll(path: str):
     """
     重命名ccui_packs目录下的所有文件后缀名
     :param path: ccui_packs路径
@@ -17,6 +17,7 @@ def renameAll(path: str):
             os.rename(i, i.replace(".2", ".ktx"))
         elif i.endswith(".3"):
             os.rename(i, i.replace(".3", ".plist"))
+    convertAllBplist(path)
 
 
 def splitImage(img_file: str, json_file: str, output_path: str):
