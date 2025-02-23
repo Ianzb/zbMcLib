@@ -50,8 +50,8 @@ def splitImage(img_file: str, json_file: str, output_path: str):
 
         b = Image.new("RGBA", (w3, h3))
 
-        b.paste(small_image, (x2, y2), small_image)
-        f.createDir(output_path)
+        b.alpha_composite(small_image, (x2, y2))
+        f.createDir(f.splitPath(f.joinPath(output_path, frame_name), 3))
         b.save(f.joinPath(output_path, frame_name), format="png")
 
 
