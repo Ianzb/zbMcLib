@@ -1,6 +1,5 @@
 import hashlib
 import time
-from urllib.parse import urlparse
 
 
 def decryptUrl(url: str):
@@ -11,11 +10,5 @@ def decryptUrl(url: str):
     """
     if "?" in url:
         url = url.split("?")[0]
-    private_key = "mEE7Cot48r9j2AvEL2N6jpXEc"
-    current_time = int(time.time())
-    expiration_time = current_time + 60 * 60 * 24 * 365
-    expiration_time_hex = hex(expiration_time)[2:]
-
-    signature = private_key +url+ expiration_time_hex
-    key1 = hashlib.md5(signature.encode()).hexdigest()
-    return f"{url}?key1={key1}&key2={expiration_time_hex}"
+    expiration_time_hex = hex(int(time.time()) + 60 * 60 * 24 * 365)[2:]
+    return f"{url}?key1={hashlib.md5(("mEE7Cot48r9j2AvEL2N6jpXEc" + url + expiration_time_hex).encode()).hexdigest()}&key2={expiration_time_hex}"

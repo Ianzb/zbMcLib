@@ -1,4 +1,4 @@
-import zbToolLib as f
+import zbToolLib as zb
 from PIL import Image
 
 
@@ -14,11 +14,11 @@ def combineWonderImage(id1: int | str, id2: int | str, imgs_path: str, output_pa
     name = "wonder_" + wid + "_"
 
     def getPos(img: str):
-        img = f.splitPath(img).replace(name, "").replace(".png", "").strip()
+        img = zb.splitPath(img).replace(name, "").replace(".png", "").strip()
         l = img.rsplit("-", 1)
         return [int(i) for i in l]
 
-    imgs = sorted([i for i in f.walkFile(imgs_path, 1) if i.endswith(".png") and f.splitPath(i).startswith(name)], key=lambda k: getPos(k))
+    imgs = sorted([i for i in zb.walkFile(imgs_path, 1) if i.endswith(".png") and zb.splitPath(i).startswith(name)], key=lambda k: getPos(k))
     poses = [getPos(i) for i in imgs]
     max_x = max([i[0] for i in poses])
     min_x = min([i[0] for i in poses])

@@ -1,7 +1,7 @@
 import json
 from copy import deepcopy
 
-import zbToolLib as f
+import zbToolLib as zb
 
 
 def getSign(post: dict):
@@ -39,7 +39,7 @@ def H5ApiPost(url: str, post: dict):
     """
     if not url.startswith("https://g79apigatewayobt.nie.netease.com/h5"):
         url = "https://g79apigatewayobt.nie.netease.com/h5" + url
-    result = f.postUrl(url, processPostData(post), f.REQUEST_HEADER)
+    result = zb.postUrl(url, processPostData(post), zb.REQUEST_HEADER)
     return result
 
 

@@ -1,4 +1,4 @@
-import zbToolLib as f
+import zbToolLib as zb
 import os
 import json
 from PIL import Image
@@ -9,7 +9,7 @@ def convertAll(path: str):
     重命名ccui_packs目录下的所有文件后缀名
     :param path: ccui_packs路径
     """
-    l = f.walkFile(path)
+    l = zb.walkFile(path)
     for i in l:
         if i.endswith(".1"):
             os.rename(i, i.replace(".1", ".png"))
@@ -51,8 +51,8 @@ def splitImage(img_file: str, json_file: str, output_path: str):
         b = Image.new("RGBA", (w3, h3))
 
         b.alpha_composite(small_image, (x2, y2))
-        f.createDir(f.splitPath(f.joinPath(output_path, frame_name), 3))
-        b.save(f.joinPath(output_path, frame_name), format="png")
+        zb.createDir(zb.splitPath(zb.joinPath(output_path, frame_name), 3))
+        b.save(zb.joinPath(output_path, frame_name), format="png")
 
 
 def readBplist(data: bytes):
@@ -70,15 +70,15 @@ def convertAllBplist(path: str):
     转换ccui_packs目录下的bplist文件
     :param path: ccui_packs路径
     """
-    l = f.walkFile(path)
+    l = zb.walkFile(path)
     for i in l:
         try:
             with open(i, "rb") as file:
                 data = file.read()
             b = readBplist(data)
 
-            with open(f.joinPath(f.splitPath(i, 3), f.splitPath(i, 1) + ".json"), "w", encoding="utf-8") as file:
+            with open(zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1) + ".json"), "w", encoding="utf-8") as file:
                 file.write(json.dumps(b, indent=4, ensure_ascii=False))
-            f.deleteFile(i)
+            zb.deleteFile(i)
         except:
             pass

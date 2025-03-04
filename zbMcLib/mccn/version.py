@@ -5,7 +5,7 @@ import time
 
 import bs4
 import lxml
-import zbToolLib as f
+import zbToolLib as zb
 
 
 def getFromListFile( url):
@@ -14,7 +14,7 @@ def getFromListFile( url):
     :param url: Api地址
     :return: 列表形式的数据，每个元素为一行数据的字典
     """
-    text = f.getUrl(url, f.REQUEST_HEADER).text
+    text = zb.getUrl(url, zb.REQUEST_HEADER).text
     text = text.split("\n")
     text = [json.loads(("{" + i.rstrip(",") + "}")) for i in text if i]
     return text
@@ -26,7 +26,7 @@ def getFromJsonFile( url):
     :param url: Api地址
     :return: 字典形式的数据
     """
-    return json.loads(f.getUrl(url, f.REQUEST_HEADER).text)
+    return json.loads(zb.getUrl(url, zb.REQUEST_HEADER).text)
 
 
 def _getG79Version( data, name: str = "", patch_version=""):
@@ -34,7 +34,7 @@ def _getG79Version( data, name: str = "", patch_version=""):
     if name != "官服":
         return {"name": name, "version": data["version"], "patch_version": patch_version, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
     else:
-        return {"name": name, "version": data["version"], "patch_version": patch_version, "website_version": None, "minimum_version": data["min_ver"], "url": data["url"], "website_url": None, "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
+        return {"name": name, "version": data["version"], "patch_version": patch_version, "website_version": "", "minimum_version": data["min_ver"], "url": data["url"], "website_url": "", "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
 
 
 def _getG79PatchVersion( data: dict, version):
@@ -47,7 +47,7 @@ def _getG79PatchVersion( data: dict, version):
 
 def _getG79DevLogUrl( version_type: str):
     v = ".".join(version_type.rstrip("beta").rstrip("stable").split(".")[0:2])
-    if version_type.endswith("beta") and not "404" in f.getUrl(f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI-beta/更新信息/{v}.html", f.REQUEST_HEADER).text:
+    if version_type.endswith("beta") and not "404" in zb.getUrl(f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI-beta/更新信息/{v}.html", zb.REQUEST_HEADER).text:
         return f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI-beta/更新信息/{v}.html"
     else:
         return f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI/更新信息/{v}.html"
@@ -55,32 +55,32 @@ def _getG79DevLogUrl( version_type: str):
 
 def _getG79WebsiteDownloadUrl():
     try:
-        res = f.getUrl(r"https://adl.netease.com/d/g/mc/c/gwnew?type=android", f.REQUEST_HEADER)
+        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/gwnew?type=android", zb.REQUEST_HEADER)
         res = lxml.etree.HTML(res.text)
         name = res.xpath("/html/body/script[2]/text()")[0]
         pattern = r'var android_link = android_type \?\s*"(https?://[^"]+)"\s*:\s*"(https?://[^"]+)"\s*;'
         match = re.search(pattern, name)
         return match.group(1).split("?")[0]
     except:
-        return None
+        return ""
 
 
 def _getG79IOSIconUrl():
     try:
-        res = f.getUrl("https://apps.apple.com/cn/app/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C-%E7%A7%BB%E5%8A%A8%E7%89%88/id1243986797", f.REQUEST_HEADER)
+        res = zb.getUrl("https://apps.apple.com/cn/app/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C-%E7%A7%BB%E5%8A%A8%E7%89%88/id1243986797", zb.REQUEST_HEADER)
         res = lxml.etree.HTML(res.text)
         return "/".join(res.xpath("/html/head/meta[15]/@content")[0].split("/")[:-1]) + "/1024x1024bb.png"
     except:
-        return None
+        return ""
 
 
 def _getG79DevIOSIconUrl():
     try:
-        res = f.getUrl("https://testflight.apple.com/join/mOxZm1dD", f.REQUEST_HEADER)
+        res = zb.getUrl("https://testflight.apple.com/join/mOxZm1dD", zb.REQUEST_HEADER)
         res = lxml.etree.HTML(res.text)
         return "/".join(res.xpath("/html/head/meta[14]/@content")[0].split("/")[:-1]) + "/1024x1024bb.png"
     except:
-        return None
+        return ""
 
 
 def getG79Versions():
@@ -123,7 +123,7 @@ def getG79Versions():
     data5 = getFromJsonFile(urls["pe_old"])["data"]
 
     result["release"]["official"] = _getG79Version(data1["netease"], "官服", _getG79PatchVersion(data2["android"], data1["netease"]["version"]))
-    result["release"]["official"]["website_version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else None
+    result["release"]["official"]["website_version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else ""
     result["release"]["official"]["website_url"] = website_url
     result["release"]["ios"] = _getG79Version(data1["app_store"], "iOS服", _getG79PatchVersion(data2["ios"], data1["app_store"]["version"]))
     result["release"]["ios"]["icon"] = _getG79IOSIconUrl()
@@ -135,7 +135,7 @@ def getG79Versions():
     if data1["netease"]["text"]:
         result["preview"] = _getG79Version(data1["netease"], "抢先体验版", _getG79PatchVersion(data2["android"], data1["netease"]["version"]))
     else:
-        result["preview"] = None
+        result["preview"] = ""
 
     result["developer"]["android"]["latest"]["version"] = data4["url"].replace("https://g79.gdl.netease.com/dev_launcher_", "").replace(".apk", "")
     result["developer"]["android"]["latest"]["version_type"] = data3["pe"]
@@ -151,12 +151,12 @@ def getG79Versions():
 
 def _getX19Version( data, name: str = "", debug: bool = False):
     v = list(data[-1].keys())[0]
-    version = None
+    version = ""
     log = ""
     if not debug:
         url = f"https://x19.update.netease.com/MCUpdate_{".".join(v.split(".")[:3])}.txt"
         try:
-            log = f.getUrl(url, f.REQUEST_HEADER)
+            log = zb.getUrl(url, zb.REQUEST_HEADER)
             if log.status_code != 200:
                 raise Exception
             log.encoding = "GB2312"
@@ -168,19 +168,19 @@ def _getX19Version( data, name: str = "", debug: bool = False):
             if "exe" in list(i.values())[0]["url"]:
                 version = list(i.keys())[0]
                 break
-    return {"name": name, "version": version, "patch_version": v, "log": log, "url": None, "patch_url": list(data[-1].values())[0]["url"]}
+    return {"name": name, "version": version, "patch_version": v, "log": log, "url": "", "patch_url": list(data[-1].values())[0]["url"]}
 
 
 def _getX19WebsiteDownloadUrl():
     try:
-        res = f.getUrl(r"https://adl.netease.com/d/g/mc/c/pc?type=pc", f.REQUEST_HEADER)
+        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/pc?type=pc", zb.REQUEST_HEADER)
         res = lxml.etree.HTML(res.text)
         name = res.xpath("/html/body/script[2]/text()")[0]
         pattern = r'var pc_link = "(https?://[^"]+)"\s*;'
         match = re.search(pattern, name)
         return match.group(1).split("?")[0]
     except:
-        return None
+        return ""
 
 
 def getX19Versions():
@@ -199,10 +199,10 @@ def getX19Versions():
             }
     result["release"]["official"] = _getX19Version(getFromListFile(urls["x19_java_patchlist"]), "官服")
     result["release"]["official"]["url"] = website_url
-    result["release"]["official"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else None
+    result["release"]["official"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else ""
     result["debug"]["official"] = _getX19Version(getFromListFile(urls["x19_patch_list_debug"]), "官服", True)
     result["release"]["fever"] = _getX19Version(getFromListFile(urls["A50SdkCn_x19_java_patchlist"]), "发烧平台官服")
-    result["release"]["fever"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else None
+    result["release"]["fever"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else ""
     result["debug"]["fever"] = _getX19Version(getFromListFile(urls["A50SdkCn_x19_patch_list_debug"]), "发烧平台官服", True)
     result["release"]["4399"] = _getX19Version(getFromListFile(urls["PC4399_x19_java_patchlist"]), "4399渠道服")
     result["release"]["4399"]["url"] = "https://dl.img4399.com/download/4399wdsj.exe"
@@ -215,7 +215,7 @@ def _getMCSVersion( data, name: str = ""):
     v = list(data[-1].keys())[0]
     url = f"https://x19.update.netease.com/game_notice/MCStudio_{".".join(v.split(".")[:3])}.txt"
     try:
-        log = f.getUrl(url, f.REQUEST_HEADER)
+        log = zb.getUrl(url, zb.REQUEST_HEADER)
         if log.status_code != 200:
             raise Exception
         log.encoding = "utf-8"
@@ -224,12 +224,12 @@ def _getMCSVersion( data, name: str = ""):
         log = ""
     log_url, date = _getMCSUrl(v)
     website_url = _getMCSWebsiteDownloadUrl()
-    return {"name": name, "version": re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else None, "patch_version": v, "patch_date": date, "log": log, "url": website_url, "patch_url": list(data[-1].values())[0]["url"], "log_url": log_url}
+    return {"name": name, "version": re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else "", "patch_version": v, "patch_date": date, "log": log, "url": website_url, "patch_url": list(data[-1].values())[0]["url"], "log_url": log_url}
 
 
 def _getMCSUrl( version: str):
     v = ".".join(version.split(".")[:3])
-    res = f.getUrl(r"https://mc.163.com/dev/mcmanual/mc-dev/mcguide/10-新内容/1-开发工作台/946-1.1.22.html", f.REQUEST_HEADER)
+    res = zb.getUrl(r"https://mc.163.com/dev/mcmanual/mc-dev/mcguide/10-新内容/1-开发工作台/946-1.1.22.html", zb.REQUEST_HEADER)
     res.encoding = "utf-8"
     soup = bs4.BeautifulSoup(res.text, "lxml")
     for i in soup.find_all(name="a"):
@@ -237,19 +237,20 @@ def _getMCSUrl( version: str):
             try:
                 return "https://mc.163.com" + i["href"].replace("?catalog=1", ""), i.text.replace("版本", "").replace(v, "").strip()
             except:
-                return None, None
+                return "",""
+    return "", ""
 
 
 def _getMCSWebsiteDownloadUrl():
     try:
-        res = f.getUrl(r"https://adl.netease.com/d/g/mc/c/dev", f.REQUEST_HEADER)
+        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/dev", zb.REQUEST_HEADER)
         res = lxml.etree.HTML(res.text)
         name = res.xpath("/html/body/script[2]/text()")[0]
         pattern = r'var pc_link = "(https?://[^"]+)"\s*;'
         match = re.search(pattern, name)
         return match.group(1).split("?")[0]
     except:
-        return None
+        return ""
 
 
 def getMCSVersions():
