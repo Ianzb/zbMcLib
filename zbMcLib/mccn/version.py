@@ -8,7 +8,7 @@ import lxml
 import zbToolLib as zb
 
 
-def getFromListFile( url):
+def getFromListFile(url):
     """
     解析list文件形式的版本信息Api
     :param url: Api地址
@@ -20,7 +20,7 @@ def getFromListFile( url):
     return text
 
 
-def getFromJsonFile( url):
+def getFromJsonFile(url):
     """
     解析json文件形式的版本信息Api
     :param url: Api地址
@@ -29,7 +29,13 @@ def getFromJsonFile( url):
     return json.loads(zb.getUrl(url, zb.REQUEST_HEADER).text)
 
 
-def _getG79Version( data, name: str = "", patch_version=""):
+def _getG79GameNotice():
+    response=zb.getUrl("https://g79.update.netease.com/game_notice/g79_notice_netease", zb.REQUEST_HEADER)
+    response.encoding = "utf-8"
+    return response.text
+
+
+def _getG79Version(data, name: str = "", patch_version=""):
     import base64
     if name != "官服":
         return {"name": name, "version": data["version"], "patch_version": patch_version, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
@@ -37,7 +43,7 @@ def _getG79Version( data, name: str = "", patch_version=""):
         return {"name": name, "version": data["version"], "patch_version": patch_version, "website_version": "", "minimum_version": data["min_ver"], "url": data["url"], "website_url": "", "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
 
 
-def _getG79PatchVersion( data: dict, version):
+def _getG79PatchVersion(data: dict, version):
     l = []
     for i in data:
         if i.split(".")[:2] == version.split(".")[:2]:
@@ -45,7 +51,7 @@ def _getG79PatchVersion( data: dict, version):
     return l[-1]
 
 
-def _getG79DevLogUrl( version_type: str):
+def _getG79DevLogUrl(version_type: str):
     v = ".".join(version_type.rstrip("beta").rstrip("stable").split(".")[0:2])
     if version_type.endswith("beta") and not "404" in zb.getUrl(f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI-beta/更新信息/{v}.html", zb.REQUEST_HEADER).text:
         return f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI-beta/更新信息/{v}.html"
@@ -89,7 +95,7 @@ def getG79Versions():
     :return: 字典形式的数据
     """
     website_url = _getG79WebsiteDownloadUrl()
-    result = {"name": "手游版启动器", "release": {"name": "正式版"}, "preview": {}, "developer": {"name": "开发者测试版", "android": {"name": "Android", "latest": {"name": "最新版本"}, "old": {"name": "上一版本"}}, "ios": {"name": "iOS", "latest": {"name": "最新版本"}}}}
+    result = {"name": "手游版启动器", "game_notice": _getG79GameNotice(), "release": {"name": "正式版"}, "preview": {}, "developer": {"name": "开发者测试版", "android": {"name": "Android", "latest": {"name": "最新版本"}, "old": {"name": "上一版本"}}, "ios": {"name": "iOS", "latest": {"name": "最新版本"}}}}
     urls = {
         "download-version": "https://mc-launcher.webapp.163.com/users/get/download-version",
         "pe": "https://mc-launcher.webapp.163.com/users/get/download/pe",
@@ -149,7 +155,7 @@ def getG79Versions():
     return result
 
 
-def _getX19Version( data, name: str = "", debug: bool = False):
+def _getX19Version(data, name: str = "", debug: bool = False):
     v = list(data[-1].keys())[0]
     version = ""
     log = ""
@@ -211,7 +217,7 @@ def getX19Versions():
     return result
 
 
-def _getMCSVersion( data, name: str = ""):
+def _getMCSVersion(data, name: str = ""):
     v = list(data[-1].keys())[0]
     url = f"https://x19.update.netease.com/game_notice/MCStudio_{".".join(v.split(".")[:3])}.txt"
     try:
@@ -227,7 +233,7 @@ def _getMCSVersion( data, name: str = ""):
     return {"name": name, "version": re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else "", "patch_version": v, "patch_date": date, "log": log, "url": website_url, "patch_url": list(data[-1].values())[0]["url"], "log_url": log_url}
 
 
-def _getMCSUrl( version: str):
+def _getMCSUrl(version: str):
     v = ".".join(version.split(".")[:3])
     res = zb.getUrl(r"https://mc.163.com/dev/mcmanual/mc-dev/mcguide/10-新内容/1-开发工作台/946-1.1.22.html", zb.REQUEST_HEADER)
     res.encoding = "utf-8"
@@ -237,7 +243,7 @@ def _getMCSUrl( version: str):
             try:
                 return "https://mc.163.com" + i["href"].replace("?catalog=1", ""), i.text.replace("版本", "").replace(v, "").strip()
             except:
-                return "",""
+                return "", ""
     return "", ""
 
 
