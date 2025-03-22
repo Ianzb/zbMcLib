@@ -30,17 +30,18 @@ def getFromJsonFile(url):
 
 
 def _getG79GameNotice():
-    response=zb.getUrl("https://g79.update.netease.com/game_notice/g79_notice_netease", zb.REQUEST_HEADER)
+    response = zb.getUrl("https://g79.update.netease.com/game_notice/g79_notice_netease", zb.REQUEST_HEADER)
     response.encoding = "utf-8"
     return response.text
 
 
 def _getG79Version(data, name: str = "", patch_version=""):
     import base64
+    patch_url = f"https://g79-102.gph.netease.com/android_{patch_version}/{patch_version}/android/manifest.zip" if patch_version else ""
     if name != "官服":
-        return {"name": name, "version": data["version"], "patch_version": patch_version, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
+        return {"name": name, "version": data["version"], "patch_version": patch_version, "patch_url": patch_url, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
     else:
-        return {"name": name, "version": data["version"], "patch_version": patch_version, "website_version": "", "minimum_version": data["min_ver"], "url": data["url"], "website_url": "", "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
+        return {"name": name, "version": data["version"], "patch_version": patch_version, "patch_url": patch_url, "website_version": "", "minimum_version": data["min_ver"], "url": data["url"], "website_url": "", "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
 
 
 def _getG79PatchVersion(data: dict, version):
@@ -141,7 +142,7 @@ def getG79Versions():
     if data1["netease"]["text"]:
         result["preview"] = _getG79Version(data1["netease"], "抢先体验版", _getG79PatchVersion(data2["android"], data1["netease"]["version"]))
     else:
-        result["preview"] = ""
+        result["preview"] = {}
 
     result["developer"]["android"]["latest"]["version"] = data4["url"].replace("https://g79.gdl.netease.com/dev_launcher_", "").replace(".apk", "")
     result["developer"]["android"]["latest"]["version_type"] = data3["pe"]
