@@ -1,6 +1,7 @@
-import zbToolLib as zb
-import os
 import json
+import os
+
+import zbToolLib as zb
 from PIL import Image
 
 
@@ -12,11 +13,11 @@ def convertAll(path: str):
     l = zb.walkFile(path)
     for i in l:
         if i.endswith(".1"):
-            os.rename(i, i.replace(".1", ".png"))
+            os.rename(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1)) + ".png")
         if i.endswith(".2"):
-            os.rename(i, i.replace(".2", ".ktx"))
+            os.rename(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1)) + ".ktx")
         elif i.endswith(".3"):
-            os.rename(i, i.replace(".3", ".plist"))
+            os.rename(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1)) + ".plist")
     convertAllBplist(path)
 
 
