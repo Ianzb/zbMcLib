@@ -54,7 +54,9 @@ def _getG79PatchVersion(data: dict, version):
 
 def _getG79DevLogUrl(version_type: str):
     v = ".".join(version_type.rstrip("beta").rstrip("stable").split(".")[0:2])
-    if version_type.endswith("beta") and not "404" in zb.getUrl(f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI-beta/更新信息/{v}.html", zb.REQUEST_HEADER).text:
+    res = zb.getUrl(f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI/更新信息/{v}.html", zb.REQUEST_HEADER)
+    res.encoding = "utf-8"
+    if "你的页面被末影龙抓走了" in res.text:
         return f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI-beta/更新信息/{v}.html"
     else:
         return f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI/更新信息/{v}.html"
