@@ -1,13 +1,13 @@
 [project]
 name = "zbMcLib"
-version = "0.2.7"
+version = "0.2.8"
 description = "zbMinecraft库"
 requires-python = ">=3.12"
 dependencies = [
-    "zbToolLib>=1.2.5b1",
-    "lxml>=5.3.1",
-    "beautifulsoup4>=4.13.3",
-    "pillow>=11.1.0",
+    "zbToolLib>=1.2.6.1",
+    "lxml>=5.4.0",
+    "beautifulsoup4>=4.13.4",
+    "pillow>=11.2.1",
 ]
 authors = [
     { name = "Ianzb", email = "93322252@qq.com" },

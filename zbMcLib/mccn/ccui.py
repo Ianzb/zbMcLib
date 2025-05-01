@@ -13,11 +13,11 @@ def convertAll(path: str):
     l = zb.walkFile(path)
     for i in l:
         if i.endswith(".1"):
-            os.rename(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1)) + ".png")
+            zb.movePath(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1) + ".png"),True)
         if i.endswith(".2"):
-            os.rename(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1)) + ".ktx")
+            zb.movePath(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1) + ".ktx"),True)
         elif i.endswith(".3"):
-            os.rename(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1)) + ".plist")
+            zb.movePath(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1) + ".plist"),True)
     convertAllBplist(path)
 
 
@@ -35,10 +35,10 @@ def splitImage(img_file: str, json_file: str, output_path: str):
 
     for frame_name, frame_data in json_data["frames"].items():
 
-        x, y, w, h = [int(value) for value in frame_data["frame"][1:-1].replace("{", "").replace("}", "").split(",")]
-        x2, y2, w2, h2 = [int(value) for value in frame_data["sourceColorRect"][1:-1].replace("{", "").replace("}", "").split(",")]
-        w3, h3 = [int(value) for value in frame_data["sourceSize"][1:-1].replace("{", "").replace("}", "").split(",")]
-        offset_x, offset_y = [int(value) for value in frame_data["offset"][1:-1].split(",")]
+        x, y, w, h = [int(eval(value)) for value in frame_data["frame"][1:-1].replace("{", "").replace("}", "").split(",")]
+        x2, y2, w2, h2 = [int(eval(value)) for value in frame_data["sourceColorRect"][1:-1].replace("{", "").replace("}", "").split(",")]
+        w3, h3 = [int(eval(value)) for value in frame_data["sourceSize"][1:-1].replace("{", "").replace("}", "").split(",")]
+        offset_x, offset_y = [int(eval(value)) for value in frame_data["offset"][1:-1].split(",")]
 
         if frame_data["rotated"]:
             w, h = h, w
