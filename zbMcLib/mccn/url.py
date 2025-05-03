@@ -1,6 +1,6 @@
 import hashlib
 import time
-
+import zbToolLib as zb
 
 def decryptUrl(url: str):
     """
@@ -11,4 +11,4 @@ def decryptUrl(url: str):
     if "?" in url:
         url = url.split("?")[0]
     expiration_time_hex = hex(int(time.time()) + 60 * 60 * 24 * 365)[2:]
-    return f"{url}?key1={hashlib.md5(("mEE7Cot48r9j2AvEL2N6jpXEc" + url + expiration_time_hex).encode()).hexdigest()}&key2={expiration_time_hex}"
+    return f"{url}?key1={hashlib.md5(("mEE7Cot48r9j2AvEL2N6jpXEc" + zb.splitUrl(url).path + expiration_time_hex).encode()).hexdigest()}&key2={expiration_time_hex}"
