@@ -82,7 +82,7 @@ def _getG79IOSIconUrl():
         return {"icon": "/".join(res.xpath("/html/head/meta[15]/@content")[0].split("/")[:-1]) + "/1024x1024bb.png",
                 "store_version": res.xpath("/html/body/div/main/div/section/div[2]/div/div/p/text()")[0].lstrip("版本 "),
                 "store_date": res.xpath("/html/body/div/main/div/section/div[2]/div/div/time/@aria-label")[0],
-                "store_log": "\n".join(res.xpath("/html/body/div/main/div/section/div[2]/div/div/p/text()")[1:]),
+                "store_log": "\n".join(res.xpath("/html/body/div/main/div/section/div[2]/div/div/p/text()")[1:-1]),
                 }
     except:
         return ""
