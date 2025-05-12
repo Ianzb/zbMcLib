@@ -1,2 +1,4 @@
+import json
+
 from zbMcLib.mccn.version import *
-print(getVersions())
+print(json.dumps(getVersions(), ensure_ascii=False, indent=4))

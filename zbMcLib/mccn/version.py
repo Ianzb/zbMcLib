@@ -77,8 +77,13 @@ def _getG79WebsiteDownloadUrl():
 def _getG79IOSIconUrl():
     try:
         res = zb.getUrl("https://apps.apple.com/cn/app/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C-%E7%A7%BB%E5%8A%A8%E7%89%88/id1243986797", zb.REQUEST_HEADER)
+        res.encoding = "utf-8"
         res = lxml.etree.HTML(res.text)
-        return "/".join(res.xpath("/html/head/meta[15]/@content")[0].split("/")[:-1]) + "/1024x1024bb.png"
+        return {"icon": "/".join(res.xpath("/html/head/meta[15]/@content")[0].split("/")[:-1]) + "/1024x1024bb.png",
+                "store_version": res.xpath("/html/body/div/main/div/section/div[2]/div/div/p/text()")[0].lstrip("版本 "),
+                "store_date": res.xpath("/html/body/div/main/div/section/div[2]/div/div/time/@aria-label")[0],
+                "store_log": "\n".join(res.xpath("/html/body/div/main/div/section/div[2]/div/div/p/text()")[1:]),
+                }
     except:
         return ""
 
@@ -135,7 +140,7 @@ def getG79Versions():
     result["release"]["official"]["website_version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else ""
     result["release"]["official"]["website_url"] = website_url
     result["release"]["ios"] = _getG79Version(data1["app_store"], "iOS服", _getG79PatchVersion(data2["ios"], data1["app_store"]["version"]))
-    result["release"]["ios"]["icon"] = _getG79IOSIconUrl()
+    result["release"]["ios"].update(_getG79IOSIconUrl())
     result["release"]["taptap"] = _getG79Version(data1["netease.taptap2_cps_dev"], "TapTap官服", _getG79PatchVersion(data2["android"], data1["netease.taptap2_cps_dev"]["version"]))
     result["release"]["hykb"] = _getG79Version(data1["netease.hykb_cps_dev"], "好游快爆官服", _getG79PatchVersion(data2["android"], data1["netease.hykb_cps_dev"]["version"]))
     for i in data1.keys():
