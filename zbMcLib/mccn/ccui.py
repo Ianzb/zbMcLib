@@ -1,5 +1,4 @@
 import json
-import os
 
 import zbToolLib as zb
 from PIL import Image
@@ -13,11 +12,11 @@ def convertAll(path: str):
     l = zb.walkFile(path)
     for i in l:
         if i.endswith(".1"):
-            zb.movePath(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1) + ".png"),True)
+            zb.movePath(i, zb.joinPath(zb.getFileDir(i), zb.getFileName(i, False) + ".png"), True)
         if i.endswith(".2"):
-            zb.movePath(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1) + ".ktx"),True)
+            zb.movePath(i, zb.joinPath(zb.getFileDir(i), zb.getFileName(i, False) + ".ktx"), True)
         elif i.endswith(".3"):
-            zb.movePath(i, zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1) + ".plist"),True)
+            zb.movePath(i, zb.joinPath(zb.getFileDir(i), zb.getFileName(i, False) + ".plist"), True)
     convertAllBplist(path)
 
 
@@ -52,7 +51,7 @@ def splitImage(img_file: str, json_file: str, output_path: str):
         b = Image.new("RGBA", (w3, h3))
 
         b.alpha_composite(small_image, (x2, y2))
-        zb.createDir(zb.splitPath(zb.joinPath(output_path, frame_name), 3))
+        zb.createDir(zb.getFileDir(zb.joinPath(output_path, frame_name)))
         b.save(zb.joinPath(output_path, frame_name), format="png")
 
 
@@ -78,7 +77,7 @@ def convertAllBplist(path: str):
                 data = file.read()
             b = readBplist(data)
 
-            with open(zb.joinPath(zb.splitPath(i, 3), zb.splitPath(i, 1) + ".json"), "w", encoding="utf-8") as file:
+            with open(zb.joinPath(zb.getFileDir(i), zb.getFileName(i, False) + ".json"), "w", encoding="utf-8") as file:
                 file.write(json.dumps(b, indent=4, ensure_ascii=False))
             zb.deleteFile(i)
         except:

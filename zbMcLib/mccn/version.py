@@ -14,7 +14,7 @@ def getFromListFile(url):
     :param url: Api地址
     :return: 列表形式的数据，每个元素为一行数据的字典
     """
-    text = zb.getUrl(url, zb.REQUEST_HEADER).text
+    text = zb.getUrl(url).text
     text = text.split("\n")
     text = [json.loads(("{" + i.rstrip(",") + "}")) for i in text if i]
     return text
@@ -26,11 +26,11 @@ def getFromJsonFile(url):
     :param url: Api地址
     :return: 字典形式的数据
     """
-    return json.loads(zb.getUrl(url, zb.REQUEST_HEADER).text)
+    return json.loads(zb.getUrl(url).text)
 
 
 def _getG79GameNotice():
-    response = zb.getUrl("https://g79.update.netease.com/game_notice/g79_notice_netease", zb.REQUEST_HEADER)
+    response = zb.getUrl("https://g79.update.netease.com/game_notice/g79_notice_netease")
     response.encoding = "utf-8"
     return response.text
 
@@ -54,7 +54,7 @@ def _getG79PatchVersion(data: dict, version):
 
 def _getG79DevLogUrl(version_type: str):
     v = ".".join(version_type.rstrip("beta").rstrip("stable").split(".")[0:2])
-    res = zb.getUrl(f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI/更新信息/{v}.html", zb.REQUEST_HEADER)
+    res = zb.getUrl(f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI/更新信息/{v}.html")
     res.encoding = "utf-8"
     if "你的页面被末影龙抓走了" in res.text:
         return f"https://mc.163.com/dev/mcmanual/mc-dev/mcdocs/1-ModAPI-beta/更新信息/{v}.html"
@@ -64,7 +64,7 @@ def _getG79DevLogUrl(version_type: str):
 
 def _getG79WebsiteDownloadUrl():
     try:
-        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/gwnew?type=android", zb.REQUEST_HEADER)
+        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/gwnew?type=android")
         res = lxml.etree.HTML(res.text)
         name = res.xpath("/html/body/script[2]/text()")[0]
         pattern = r'var android_link = android_type \?\s*"(https?://[^"]+)"\s*:\s*"(https?://[^"]+)"\s*;'
@@ -76,7 +76,7 @@ def _getG79WebsiteDownloadUrl():
 
 def _getG79IOSIconUrl():
     try:
-        res = zb.getUrl("https://apps.apple.com/cn/app/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C-%E7%A7%BB%E5%8A%A8%E7%89%88/id1243986797", zb.REQUEST_HEADER)
+        res = zb.getUrl("https://apps.apple.com/cn/app/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C-%E7%A7%BB%E5%8A%A8%E7%89%88/id1243986797")
         res.encoding = "utf-8"
         res = lxml.etree.HTML(res.text)
         return {"icon": "/".join(res.xpath("/html/head/meta[15]/@content")[0].split("/")[:-1]) + "/1024x1024bb.png",
@@ -90,7 +90,7 @@ def _getG79IOSIconUrl():
 
 def _getG79DevIOSIconUrl():
     try:
-        res = zb.getUrl("https://testflight.apple.com/join/mOxZm1dD", zb.REQUEST_HEADER)
+        res = zb.getUrl("https://testflight.apple.com/join/mOxZm1dD")
         res = lxml.etree.HTML(res.text)
         return "/".join(res.xpath("/html/head/meta[14]/@content")[0].split("/")[:-1]) + "/1024x1024bb.png"
     except:
@@ -128,6 +128,7 @@ def getG79Versions():
              "xiaomi_app": ["小米渠道服", "xiaomi"],
              "oppo": ["OPPO渠道服", "oppo"],
              "bilibili_sdk": ["BiliBili渠道服", "bilibili"],
+             "allysdk.baidu":["阿里云百度渠道服","baidu_allysdk"]
              }
 
     data1 = getFromJsonFile(urls["g79_packlist_2"])
@@ -145,7 +146,7 @@ def getG79Versions():
     result["release"]["hykb"] = _getG79Version(data1["netease.hykb_cps_dev"], "好游快爆官服", _getG79PatchVersion(data2["android"], data1["netease.hykb_cps_dev"]["version"]))
     for i in data1.keys():
         if i not in ["netease", "ios", "netease.taptap2_cps_dev", "netease.hykb_cps_dev", "app_store"]:
-            result["release"][names[i][1]] = _getG79Version(data1[i], names[i][0], _getG79PatchVersion(data2["android"], data1[i]["version"]))
+            result["release"][names.get(i,["未知",i])[1]] = _getG79Version(data1[i], names.get(i,["未知",i])[0], _getG79PatchVersion(data2["android"], data1[i]["version"]))
     if data1["netease"]["text"]:
         result["preview"] = _getG79Version(data1["netease"], "抢先体验版", _getG79PatchVersion(data2["android"], data1["netease"]["version"]))
     else:
@@ -170,7 +171,7 @@ def _getX19Version(data, name: str = "", debug: bool = False):
     if not debug:
         url = f"https://x19.update.netease.com/MCUpdate_{".".join(v.split(".")[:3])}.txt"
         try:
-            log = zb.getUrl(url, zb.REQUEST_HEADER)
+            log = zb.getUrl(url)
             if log.status_code != 200:
                 raise Exception
             log.encoding = "GB2312"
@@ -187,7 +188,7 @@ def _getX19Version(data, name: str = "", debug: bool = False):
 
 def _getX19WebsiteDownloadUrl():
     try:
-        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/pc?type=pc", zb.REQUEST_HEADER)
+        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/pc?type=pc")
         res = lxml.etree.HTML(res.text)
         name = res.xpath("/html/body/script[2]/text()")[0]
         pattern = r'var pc_link = "(https?://[^"]+)"\s*;'
@@ -229,7 +230,7 @@ def _getMCSVersion(data, name: str = ""):
     v = list(data[-1].keys())[0]
     url = f"https://x19.update.netease.com/game_notice/MCStudio_{".".join(v.split(".")[:3])}.txt"
     try:
-        log = zb.getUrl(url, zb.REQUEST_HEADER)
+        log = zb.getUrl(url)
         if log.status_code != 200:
             raise Exception
         log.encoding = "utf-8"
@@ -243,7 +244,7 @@ def _getMCSVersion(data, name: str = ""):
 
 def _getMCSUrl(version: str):
     v = ".".join(version.split(".")[:3])
-    res = zb.getUrl(r"https://mc.163.com/dev/mcmanual/mc-dev/mcguide/10-新内容/1-开发工作台/946-1.1.22.html", zb.REQUEST_HEADER)
+    res = zb.getUrl(r"https://mc.163.com/dev/mcmanual/mc-dev/mcguide/10-新内容/1-开发工作台/946-1.1.22.html")
     res.encoding = "utf-8"
     soup = bs4.BeautifulSoup(res.text, "lxml")
     for i in soup.find_all(name="a"):
@@ -257,7 +258,7 @@ def _getMCSUrl(version: str):
 
 def _getMCSWebsiteDownloadUrl():
     try:
-        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/dev", zb.REQUEST_HEADER)
+        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/dev")
         res = lxml.etree.HTML(res.text)
         name = res.xpath("/html/body/script[2]/text()")[0]
         pattern = r'var pc_link = "(https?://[^"]+)"\s*;'

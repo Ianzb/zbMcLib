@@ -39,7 +39,7 @@ def H5ApiPost(url: str, post: dict):
     """
     if not url.startswith("https://g79apigatewayobt.nie.netease.com/h5"):
         url = "https://g79apigatewayobt.nie.netease.com/h5" + url
-    result = zb.postUrl(url, processPostData(post), zb.REQUEST_HEADER)
+    result = zb.postUrl(url, json=processPostData(post))
     return result
 
 
@@ -89,7 +89,14 @@ def getDownloadInfo(item_id: str | int):
     if not isinstance(item_id, str):
         item_id = str(item_id)
     return json.loads(H5ApiPost("/pe-download-item/get-download-info", {"item_id": item_id}).text)
+
+
 def getDeveloperInfo(developer_id: str | int):
+    """
+    获取开发者信息
+    :param developer_id:
+    :return:
+    """
     if not isinstance(developer_id, str):
         developer_id = str(developer_id)
     return json.loads(H5ApiPost("/pe-developer-homepage/load_developer_homepage/get/", {"id": developer_id}).text)
