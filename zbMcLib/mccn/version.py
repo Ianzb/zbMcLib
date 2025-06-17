@@ -38,6 +38,8 @@ def _getG79GameNotice():
 def _getG79Version(data, name: str = "", patch_version=""):
     import base64
     patch_url = f"https://g79-102.gph.netease.com/android_{patch_version}/{patch_version}/android/manifest.zip" if patch_version else ""
+    if name == "iOS服":
+        patch_url = patch_url.replace("android", "ios")
     if name != "官服":
         return {"name": name, "version": data["version"], "patch_version": patch_version, "patch_url": patch_url, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data["text"]).decode("utf-8")}
     else:
@@ -128,7 +130,7 @@ def getG79Versions():
              "xiaomi_app": ["小米渠道服", "xiaomi"],
              "oppo": ["OPPO渠道服", "oppo"],
              "bilibili_sdk": ["BiliBili渠道服", "bilibili"],
-             "allysdk.baidu":["阿里云百度渠道服","baidu_allysdk"]
+             "allysdk.baidu": ["阿里云百度渠道服", "baidu_allysdk"]
              }
 
     data1 = getFromJsonFile(urls["g79_packlist_2"])
@@ -146,7 +148,7 @@ def getG79Versions():
     result["release"]["hykb"] = _getG79Version(data1["netease.hykb_cps_dev"], "好游快爆官服", _getG79PatchVersion(data2["android"], data1["netease.hykb_cps_dev"]["version"]))
     for i in data1.keys():
         if i not in ["netease", "ios", "netease.taptap2_cps_dev", "netease.hykb_cps_dev", "app_store"]:
-            result["release"][names.get(i,["未知",i])[1]] = _getG79Version(data1[i], names.get(i,["未知",i])[0], _getG79PatchVersion(data2["android"], data1[i]["version"]))
+            result["release"][names.get(i, ["未知", i])[1]] = _getG79Version(data1[i], names.get(i, ["未知", i])[0], _getG79PatchVersion(data2["android"], data1[i]["version"]))
     if data1["netease"]["text"]:
         result["preview"] = _getG79Version(data1["netease"], "抢先体验版", _getG79PatchVersion(data2["android"], data1["netease"]["version"]))
     else:
