@@ -43,9 +43,9 @@ def _getG79Version(data, name: str = "", patch_version=("", "")):
     if name == "iOS服":
         patch_url = patch_url.replace("android", "ios")
     if name != "官服":
-        return {"name": name, "version": data["version"], "patch_version": patch_version[0], "patch_url": patch_url, "last_patch_version": patch_version[1], "last_patch_url": last_patch_url, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data.get("text","")).decode("utf-8")}
+        return {"name": name, "version": data["version"], "patch_version": patch_version[0], "patch_url": patch_url, "last_patch_version": patch_version[1], "last_patch_url": last_patch_url, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data.get("text", "")).decode("utf-8")}
     else:
-        return {"name": name, "version": data["version"], "patch_version": patch_version[0], "patch_url": patch_url, "last_patch_version": patch_version[1], "last_patch_url": last_patch_url, "website_version": "", "minimum_version": data["min_ver"], "url": data["url"], "website_url": "", "update_notice": base64.b64decode(data.get("text","")).decode("utf-8")}
+        return {"name": name, "version": data["version"], "patch_version": patch_version[0], "patch_url": patch_url, "last_patch_version": patch_version[1], "last_patch_url": last_patch_url, "website_version": "", "minimum_version": data["min_ver"], "url": data["url"], "website_url": "", "update_notice": base64.b64decode(data.get("text", "")).decode("utf-8")}
 
 
 def _getG79PatchVersion(data: list, version):
@@ -141,8 +141,8 @@ def getG79Versions():
              "oppo": ["OPPO渠道服", "oppo"],
              "bilibili_sdk": ["BiliBili渠道服", "bilibili"],
              "allysdk.baidu": ["阿里云百度渠道服", "baidu_allysdk"],
-             "taptap": ["TapTap官服", "netease.taptap2_cps_dev"],
-             "hykb": ["好游快爆官服", "netease.hykb_cps_dev"],
+             "netease.taptap2_cps_dev": ["TapTap官服", "taptap"],
+             "netease.hykb_cps_dev": ["好游快爆官服", "hykb"],
              }
 
     data1 = getFromJsonFile(urls["g79_packlist_2"])
