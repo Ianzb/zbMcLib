@@ -60,7 +60,7 @@ def _getG79PatchVersion(data: list, version):
     for i in data:
         if i.split(".")[:2] == data[-1].split(".")[:2]:
             l2.append(i)
-    return l[-1], l2[-1]
+    return l[-1] if len(l) > 0 else "", l2[-1] if len(l2) > 0 else ""
 
 
 def _getG79DevLogUrl(version_type: str):
