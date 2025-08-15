@@ -166,11 +166,11 @@ def getG79Versions():
         result["preview"] = {}
 
     result["developer"]["android"]["latest"]["version"] = data4["url"].replace("https://g79.gdl.netease.com/dev_launcher_", "").replace(".apk", "")
-    result["developer"]["android"]["latest"]["version_type"] = data3["pe"]
+    result["developer"]["android"]["latest"]["version_type"] = "stable" if "stable" in data3["pe"] else "beta"
     result["developer"]["android"]["latest"]["url"] = data4["url"]
     result["developer"]["android"]["latest"]["log_url"] = _getG79DevLogUrl(data3["pe"])
     result["developer"]["android"]["old"]["version"] = data5["url"].replace("https://g79.gdl.netease.com/dev_launcher_", "").replace(".apk", "")
-    result["developer"]["android"]["old"]["version_type"] = data3["pe_old"]
+    result["developer"]["android"]["old"]["version_type"] = "stable" if "stable" in data3["pe_old"] else "beta"
     result["developer"]["android"]["old"]["url"] = data5["url"]
     result["developer"]["android"]["old"]["log_url"] = _getG79DevLogUrl(data3["pe_old"])
     result["developer"]["ios"]["latest"]["icon"] = _getG79DevIOSIconUrl()
@@ -263,7 +263,7 @@ def _getMCSUrl(version: str):
     for i in soup.find_all(name="a"):
         if v in i.text:
             try:
-                return "https://mc.163.com" + i["href"].replace("?catalog=1", ""), i.text.replace("版本", "").replace(v, "").strip()
+                return "https://mc.163.com" + i["href"].replace("?catalog=1", ""), time.strftime("%Y年%#m月%#d日", time.strptime(i.text.replace("版本", "").replace(v, "").strip(), "%Y.%m.%d"))
             except:
                 return "", ""
     return "", ""
