@@ -4,10 +4,10 @@ version = "0.2.15"
 description = "zbMinecraft库"
 requires-python = ">=3.12"
 dependencies = [
-    "zbToolLib>=2.0.3",
-    "lxml>=6.0.0",
-    "beautifulsoup4>=4.13.4",
-    "pillow>=11.3.0",
+    "zbToolLib>=2.0.6.1",
+    "lxml>=6.0.2",
+    "beautifulsoup4>=4.14.2",
+    "pillow>=12.0.0",
 ]
 authors = [
     { name = "Ianzb", email = "93322252@qq.com" },
@@ -20,7 +20,7 @@ license = { text = "MIT License" }
 keywords = ["zb", "Ianzb", "Minecraft", "lib"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Operating System :: Microsoft :: Windows",
