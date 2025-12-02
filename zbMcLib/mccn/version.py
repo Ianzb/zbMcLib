@@ -187,17 +187,19 @@ def _getX19Version(data, name: str = "", debug: bool = False):
         try:
             log = zb.getUrl(url)
             if log.status_code != 200:
-                raise Exception
+                log = ""
+                url = ""
             log.encoding = "GB2312"
             log = log.text
         except:
             pass
     else:
+        url = ""
         for i in data[::-1]:
             if "exe" in list(i.values())[0]["url"]:
                 version = list(i.keys())[0]
                 break
-    return {"name": name, "version": version, "patch_version": v, "log": log, "url": "", "patch_url": list(data[-1].values())[0]["url"]}
+    return {"name": name, "version": version, "patch_version": v, "log": log, "url": "", "patch_url": list(data[-1].values())[0]["url"], "log_url": url}
 
 
 def _getX19WebsiteDownloadUrl():
@@ -246,14 +248,14 @@ def _getMCSVersion(data, name: str = ""):
     try:
         log = zb.getUrl(url)
         if log.status_code != 200:
-            raise Exception
+            log = ""
         log.encoding = "utf-8"
         log = log.text
     except:
         log = ""
     log_url, date = _getMCSUrl(v)
     website_url = _getMCSWebsiteDownloadUrl()
-    return {"name": name, "version": re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else "", "patch_version": v, "patch_date": date, "log": log, "url": website_url, "patch_url": list(data[-1].values())[0]["url"], "log_url": log_url}
+    return {"name": name, "version": re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else "", "patch_version": v, "patch_date": date, "log": log, "url": website_url, "patch_url": list(data[-1].values())[0]["url"], "log_url": url, "full_log_url": log_url}
 
 
 def _getMCSUrl(version: str):
