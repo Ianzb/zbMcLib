@@ -84,6 +84,18 @@ def _getG79WebsiteDownloadUrl():
         return ""
 
 
+def _getG79DownloaderWebsideDownloadUrl():
+    try:
+        res = zb.getUrl(r"https://adl.netease.com/d/g/mc/c/gwazxzq")
+        res = lxml.etree.HTML(res.text)
+        name = res.xpath("/html/body/script[2]/text()")[0]
+        pattern = r'var android_link = android_type \?\s*"(https?://[^"]+)"\s*:\s*"(https?://[^"]+)"\s*;'
+        match = re.search(pattern, name)
+        return match.group(1).split("?")[0]
+    except:
+        return ""
+
+
 def _getG79IOSIconUrl():
     try:
         res = zb.getUrl("https://apps.apple.com/cn/app/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C-%E7%A7%BB%E5%8A%A8%E7%89%88/id1243986797")
@@ -113,7 +125,7 @@ def getG79Versions():
     :return: 字典形式的数据
     """
     website_url = _getG79WebsiteDownloadUrl()
-    result = {"name": "手游版启动器", "game_notice": _getG79GameNotice(), "release": {"name": "正式版"}, "preview": {}, "developer": {"name": "开发者测试版", "android": {"name": "Android", "latest": {"name": "最新版本"}, "old": {"name": "上一版本"}}, "ios": {"name": "iOS", "latest": {"name": "最新版本"}}}}
+    result = {"name": "手游版启动器", "game_notice": _getG79GameNotice(), "release": {"name": "正式版"}, "preview": {}, "developer": {"name": "开发者测试版", "android": {"name": "Android", "latest": {"name": "最新版本"}, "old": {"name": "上一版本"}}, "ios": {"name": "iOS", "latest": {"name": "最新版本"}}}, "downloader": {"name": "网易MC下载器"}}
     urls = {
         "download-version": "https://mc-launcher.webapp.163.com/users/get/download-version",
         "pe": "https://mc-launcher.webapp.163.com/users/get/download/pe",
@@ -175,6 +187,11 @@ def getG79Versions():
     result["developer"]["android"]["old"]["url"] = data5["url"]
     result["developer"]["android"]["old"]["log_url"] = _getG79DevLogUrl(data3["pe_old"])
     result["developer"]["ios"]["latest"]["icon"] = _getG79DevIOSIconUrl()
+
+    downloader_url = _getG79DownloaderWebsideDownloadUrl()
+
+    result["downloader"]["version"] = re.search(r'(\d+\.\d+\.\d+)', downloader_url).group(1) if downloader_url else ""
+    result["downloader"]["url"] = downloader_url
     return result
 
 
