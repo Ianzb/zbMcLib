@@ -15,10 +15,13 @@ def getFromListFile(url):
     :param url: Api地址
     :return: 列表形式的数据，每个元素为一行数据的字典
     """
-    text = zb.getUrl(url).text
-    text = text.split("\n")
-    text = [json.loads(("{" + i.rstrip(",") + "}")) for i in text if i]
-    return text
+    try:
+        text = zb.getUrl(url).text
+        text = text.split("\n")
+        text = [json.loads(("{" + i.rstrip(",") + "}")) for i in text if i]
+        return text
+    except:
+        return []
 
 
 def getFromJsonFile(url):
@@ -27,7 +30,10 @@ def getFromJsonFile(url):
     :param url: Api地址
     :return: 字典形式的数据
     """
-    return json.loads(zb.getUrl(url).text)
+    try:
+        return json.loads(zb.getUrl(url).text)
+    except:
+        return {}
 
 
 def _getG79GameNotice():
@@ -195,7 +201,7 @@ def getG79Versions():
     return result
 
 
-def _getX19Version(data, name: str = "", debug: bool = False):
+def _getX19LegacyVersion(data, name: str = "", debug: bool = False):
     v = list(data[-1].keys())[0]
     version = ""
     log = ""
@@ -231,13 +237,24 @@ def _getX19WebsiteDownloadUrl():
         return ""
 
 
+def _getX19BedrockVersion():
+    result = {}
+    app = getFromJsonFile("https://loadingbaycn.webapp.163.com/app/v1/file_distribution/download_app?app_id=81&version=1")
+    app_content_id = app.get("main_content", {}).get("app_content_id")
+    result["fever_version_code"] = app.get("data", {}).get("main_content", {}).get("version_code")
+    return result
+
+
 def getX19Versions():
     """
     获取我的世界中国版端游最新版本
     :return: 字典形式的数据
     """
     website_url = _getX19WebsiteDownloadUrl()
-    result = {"name": "端游版启动器", "release": {"name": "正式版"}, "debug": {"name": "调试版"}}
+    result = {"name": "端游版启动器",
+              "legacy": {"name": "Java经典版", "release": {"name": "正式版"}, "debug": {"name": "调试版"}},
+              "bedrock": {"name": "基岩互通版", "release": {}}
+              }
     urls = {"x19_java_patchlist": "https://x19.update.netease.com/pl/x19_java_patchlist",
             "x19_patch_list_debug": "https://x19.update.netease.com/pl/x19_patch_list_debug",
             "A50SdkCn_x19_java_patchlist": "https://x19.update.netease.com/pl/A50SdkCn_x19_java_patchlist",
@@ -245,17 +262,20 @@ def getX19Versions():
             "PC4399_x19_java_patchlist": "https://x19.update.netease.com/pl/PC4399_x19_java_patchlist",
             "PC4399_x19_patch_list_debug": "https://x19.update.netease.com/pl/PC4399_x19_patch_list_debug",
             }
-    result["release"]["official"] = _getX19Version(getFromListFile(urls["x19_java_patchlist"]), "官服")
-    result["release"]["official"]["url"] = website_url
-    result["release"]["official"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else ""
-    result["debug"]["official"] = _getX19Version(getFromListFile(urls["x19_patch_list_debug"]), "官服", True)
-    result["release"]["fever"] = _getX19Version(getFromListFile(urls["A50SdkCn_x19_java_patchlist"]), "发烧平台官服")
-    result["release"]["fever"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else ""
-    result["debug"]["fever"] = _getX19Version(getFromListFile(urls["A50SdkCn_x19_patch_list_debug"]), "发烧平台官服", True)
-    result["release"]["4399"] = _getX19Version(getFromListFile(urls["PC4399_x19_java_patchlist"]), "4399渠道服")
-    result["release"]["4399"]["url"] = "https://dl.img4399.com/download/4399wdsj.exe"
-    result["release"]["4399"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1)
-    result["debug"]["4399"] = _getX19Version(getFromListFile(urls["PC4399_x19_patch_list_debug"]), "4399渠道服", True)
+    result["legacy"]["release"]["official"] = _getX19LegacyVersion(getFromListFile(urls["x19_java_patchlist"]), "官服")
+    result["legacy"]["release"]["official"]["url"] = website_url
+    result["legacy"]["release"]["official"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else ""
+    result["legacy"]["debug"]["official"] = _getX19LegacyVersion(getFromListFile(urls["x19_patch_list_debug"]), "官服", True)
+    result["legacy"]["release"]["fever"] = _getX19LegacyVersion(getFromListFile(urls["A50SdkCn_x19_java_patchlist"]), "发烧平台官服")
+    result["legacy"]["release"]["fever"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1) if website_url else ""
+    result["legacy"]["release"]["fever"]["fever_url"] = [file.get("url") for file in getFromJsonFile("https://loadingbaycn.webapp.163.com/app/v1/file_distribution/download_app?app_id=1&version=1").get("data", {}).get("main_content", {}).get("files", []) if file.get("path") == "WPFInstaller.exe"][0]
+    result["legacy"]["debug"]["fever"] = _getX19LegacyVersion(getFromListFile(urls["A50SdkCn_x19_patch_list_debug"]), "发烧平台官服", True)
+    result["legacy"]["release"]["4399"] = _getX19LegacyVersion(getFromListFile(urls["PC4399_x19_java_patchlist"]), "4399渠道服")
+    result["legacy"]["release"]["4399"]["url"] = "https://dl.img4399.com/download/4399wdsj.exe"
+    result["legacy"]["release"]["4399"]["version"] = re.search(r'(\d+\.\d+\.\d+\.\d+)', website_url).group(1)
+    result["legacy"]["debug"]["4399"] = _getX19LegacyVersion(getFromListFile(urls["PC4399_x19_patch_list_debug"]), "4399渠道服", True)
+
+    result["bedrock"]["release"] = _getX19BedrockVersion()
     return result
 
 
