@@ -42,15 +42,16 @@ def _getG79GameNotice():
     return response.text
 
 
-def _getG79Version(data, name: str = "", patch_version=""):
+def _getG79Version(data, name: str = "", patch_version=("", "")):
     import base64
-    patch_url = f"https://g79-102.gph.netease.com/android_{patch_version}/{patch_version}/android/manifest.zip" if patch_version else ""
+    patch_url = f"https://g79-102.gph.netease.com/android_{patch_version[0]}/{patch_version[0]}/android/manifest.zip" if patch_version[0] else ""
+    last_patch_url = f"https://g79-102.gph.netease.com/android_{patch_version[1]}/{patch_version[1]}/android/manifest.zip" if patch_version[1] else ""
     if name == "iOS服":
         patch_url = patch_url.replace("android", "ios")
     if name != "官服":
-        return {"name": name, "version": data["version"], "patch_version": patch_version, "patch_url": patch_url, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data.get("text", "")).decode("utf-8")}
+        return {"name": name, "version": data["version"], "patch_version": patch_version[0], "patch_url": patch_url, "last_patch_version": patch_version[1], "last_patch_url": last_patch_url, "minimum_version": data["min_ver"], "url": data["url"], "update_notice": base64.b64decode(data.get("text", "")).decode("utf-8")}
     else:
-        return {"name": name, "version": data["version"], "patch_version": patch_version, "patch_url": patch_url, "website_version": "", "minimum_version": data["min_ver"], "url": data["url"], "website_url": "", "update_notice": base64.b64decode(data.get("text", "")).decode("utf-8")}
+        return {"name": name, "version": data["version"], "patch_version": patch_version[0], "patch_url": patch_url, "last_patch_version": patch_version[1], "last_patch_url": last_patch_url, "website_version": "", "minimum_version": data["min_ver"], "url": data["url"], "website_url": "", "update_notice": base64.b64decode(data.get("text", "")).decode("utf-8")}
 
 
 def _getG79PatchVersion(data: list, version):
@@ -62,10 +63,12 @@ def _getG79PatchVersion(data: list, version):
     for i in l:
         data.remove(i)
     l2 = []
+    v = version.split(".")[:2]
+    v[1] = str(int(v[1]) - 1)
     for i in data:
-        if i.split(".")[:2] == data[-1].split(".")[:2]:
+        if i.split(".")[:2] == v:
             l2.append(i)
-    return l[-1] if len(l) > 0 else ""
+    return l[-1] if len(l) > 0 else "", l2[-1] if len(l2) > 0 else ""
 
 
 def _getG79DevLogUrl(version_type: str):
