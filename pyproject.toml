@@ -1,43 +1,32 @@
 [project]
 name = "zbMcLib"
-version = "0.2.20"
+version = "0.2.21b1"
 description = "zbMinecraft库"
 requires-python = ">=3.12"
-dependencies = [
-    "zbToolLib>=2.0.7",
-    "lxml>=6.0.2",
-    "beautifulsoup4>=4.14.3",
-    "pillow>=12.0.0",
-]
-authors = [
-    { name = "Ianzb", email = "93322252@qq.com" },
-]
-maintainers = [
-    { name = "Ianzb", email = "93322252@qq.com" },
-]
+dependencies = [ "zbToolLib>=2.0.7", "lxml>=6.0.2", "beautifulsoup4>=4.14.3", "pillow>=12.0.0",]
 readme = "README.md"
-license = { text = "MIT License" }
-keywords = ["zb", "Ianzb", "Minecraft", "lib"]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.13",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Operating System :: Microsoft :: Windows",
-    "Operating System :: MacOS :: MacOS X",
-    "Operating System :: POSIX :: Linux",
-]
+keywords = [ "zb", "Ianzb", "Minecraft", "lib",]
+classifiers = [ "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.13", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Operating System :: Microsoft :: Windows", "Operating System :: MacOS :: MacOS X", "Operating System :: POSIX :: Linux",]
+[[project.authors]]
+name = "Ianzb"
+email = "93322252@qq.com"
+
+[[project.maintainers]]
+name = "Ianzb"
+email = "93322252@qq.com"
 
 [build-system]
-requires = ["setuptools"]
+requires = [ "setuptools",]
 build-backend = "setuptools.build_meta"
-
-[project.urls]
-Repository = "https://github.com/Ianzb/zbMcLib/"
-
 
 [dependency-groups]
 dev = [ "toml>=0.10.2",]
+
+[project.license]
+text = "MIT License"
+
+[project.urls]
+Repository = "https://github.com/Ianzb/zbMcLib/"
 
 [tool.setuptools.packages.find]
 where = [ ".",]
